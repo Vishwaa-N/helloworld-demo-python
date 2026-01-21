@@ -18,6 +18,9 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Docker push
+        run: docker push Vishwaa/helloworld-demo-python:v2 
           
 
    
