@@ -33,7 +33,7 @@ Hello from Docker!
 
 ```
 
-Check
+
 
 
 ## Using Docker init
