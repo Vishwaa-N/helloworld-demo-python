@@ -51,9 +51,9 @@ jobs:
      
       - name: apply yaml files
         run: |
-          kubectl apply -f namespace.yaml
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
+          kubectl apply -f K8/namespace.yaml
+          kubectl apply -f K8/deployment.yaml
+          kubectl apply -f K8/service.yaml
           kubectl config set-context --current --namespace=python-app
           kubectl wait --for=condition=ready pod -l app=hello-world
       
