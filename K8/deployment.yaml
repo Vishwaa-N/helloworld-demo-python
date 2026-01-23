@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: hello-world
+ namespace: python-app
+ labels:
+   app: hello-world
+   name: vii
+spec:
+ replicas: 4
+ selector:
+   matchLabels:
+     app: hello-world
+ template:
+   metadata:
+     labels:
+       app: hello-world
+   spec:
+     containers:
+     - name: app-py
+       image: vish1401/helloworld-demo-python:v2
+       ports:
+       - containerPort: 80
