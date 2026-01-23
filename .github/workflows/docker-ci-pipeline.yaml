@@ -1,46 +1,64 @@
+---
 name: Docker-CI-Pipeline
-on: 
+on:
   push:
     paths-ignore:
-      - 'README.md'
-      - 'CONTRIBUTING.md'
-      - 'License'
+      - README.md
+      - CONTRIBUTING.md
+      - License
 jobs:
   docker-ci-job:
     runs-on: ubuntu-latest
     steps:
       - name: Code Checkout
         uses: actions/checkout@v6
-        
       - name: Build docker image
         run: docker build -t ${{ vars.DOCKER_USERNAME }}/helloworld-demo-python:v2 .
-      
       - name: Verify created image
         run: docker images
-
       - name: create container
-        run: docker run --name python-app -itd -p 8080:8080 ${{ vars.DOCKER_USERNAME }}/helloworld-demo-python:v2
-
+        run: docker run --name python-app -itd -p 8080:8080 ${{ vars.DOCKER_USERNAME
+          }}/helloworld-demo-python:v2
       - name: sleep
         run: sleep 20
-
       - name: view container
         run: docker ps
-
       - name: check output
         run: curl -f http://localhost:8080
-            
       - name: Docker Login
         uses: docker/login-action@v3.6.0
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Docker push
-        run: docker push ${{ vars.DOCKER_USERNAME }}/helloworld-demo-python:v2 
-
+        run: docker push ${{ vars.DOCKER_USERNAME }}/helloworld-demo-python:v2
       - name: Docker container cleanup
         run: docker rm -f python-app
-          
-
-   
+        
+  k8scd-job:
+    needs: docker-ci-job
+    runs-on: ubuntu-latest
+    steps:
+      - name: code-checkout
+        uses: actions/checkout@v6
+      - name: start minikube
+        id: minikube
+        uses: medyagh/setup-minikube@latest
+      - name: test minikube
+        run: kubectl get pods -A
+      - name: apply yaml files
+        run: |
+          kubectl apply -f k8s/.
+          kubectl config set-context --current --namespace=python-app
+          kubectl wait --for=condition=ready pod -l app=hello-world
+      - name: get status of the creation
+        run: |
+          kubectl get ns
+          kubectl get deployments 
+          kubectl get service -n python-app
+      - name: Test service URLs
+        run: minikube service list
+      - name: Test service URLs
+        run: minikube service hello-world --url echo -n "------------------opening the
+          service------------------" curl $(minikube service hello-world-svc
+          --url)/version
