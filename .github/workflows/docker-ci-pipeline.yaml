@@ -67,6 +67,7 @@ jobs:
         run: minikube service list
       
       - name: Test service URLs
-        run: minikube service hello-world --url echo -n "------------------opening the
-          service------------------" curl $(minikube service hello-world
-          --url)/version
+        run: |
+          minikube service hello-world -n python-app --url 
+          echo -n "------------------opening the service------------------" 
+          curl $(minikube service hello-world -n python-app --url)/version
