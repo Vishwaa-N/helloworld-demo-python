@@ -68,5 +68,5 @@ jobs:
       
       - name: Test service URLs
         run: minikube service hello-world --url echo -n "------------------opening the
-          service------------------" curl $(minikube service hello-world-svc
+          service------------------" curl $(minikube service hello-world
           --url)/version
